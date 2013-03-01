@@ -2,8 +2,8 @@
 
 1.)Put directory inside wp-content/plugins folder
 2.)Activate plugin from admin panel
-3.)You will see a tab "Unique Token" in dashbord.
-4.)Click "Unique Token" tab from dashbord it open a page to save token.
+3.)You will see a tab "Auth Client" in dashbord.
+4.)Click "Auth Client" menu from dashbord it open a page to save auth key.
 5.)Paste the "generated token from remote server for this domain" here.
 6.)Click on Save
 
