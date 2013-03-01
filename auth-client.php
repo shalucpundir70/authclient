@@ -88,7 +88,7 @@ class AuthClientHelper {
     function client_server_get_login_info() {
         $client = array();
 
-        echo $user_login = $_POST['log'];
+        $user_login = $_POST['log'];
         $user_pass = $_POST['pwd'];
         //here we get token key that we saved from wp-admin manually
         $get_option_value = get_option('auth-setting-group');
@@ -104,7 +104,7 @@ class AuthClientHelper {
         $post_data = array(
             "username" => $user_login,
             "password" => $user_pass,
-            "uniquetoken" => $auth_key_id,
+            "authkey" => $auth_key_id,
             "domainname" => $domain_name
         );
 
@@ -130,23 +130,30 @@ class AuthClientHelper {
             //echo "<pre>";print_r(maybe_unserialize($output));
             //unserialize response here  
             $info = maybe_unserialize($output);
-
-
+            
+           
             //if(is_array($info))
-            //user was authenticated
+            //user was authenticated from remote side.it $info['auth'] return true or 1
             if ($info['auth']) {
-
-                //let us see if the user exists locally
+               
+                //let us see if the user not exist exists locally and authenticated from remote server
+                // here we insert the user info locally
                 if (!username_exists($user_login)) {
-
+                    echo"user authenticated but not exist locally";
                     $info['user']->data->ID = null;
+                    
                     wp_insert_user((array) ($info['user']->data));
+                    
                 }
-
+                
+               
                 $user = get_user_by('login', $user_login);
+                
+               
 
                 if (!is_wp_error($user)) {
-
+                    
+                    //wp_set_auth_cookie( $user_id, $remember, $secure )
                     wp_set_auth_cookie($user->ID, true, false);
                     wp_redirect(site_url('/'));
                     exit(0);
