@@ -38,6 +38,7 @@ class AuthClientHelper {
         register_setting('auth-setting-group', 'auth-setting-group', array($this, 'auth_validate_options'));
         add_settings_section('auth_client_section', 'Auth Key', array($this, 'auth_section_callback'), __FILE__);
         add_settings_field('domain_name', 'Domain Name', array($this, 'auth_domain_name_callback'), __FILE__, 'auth_client_section');
+        add_settings_field('auth_server_domain_address', 'Auth Server Domain', array($this, 'auth_server_domain_name_callback'), __FILE__, 'auth_client_section');
         add_settings_field('auth_key_id', 'Auth Key', array($this, 'auth_key_callback'), __FILE__, 'auth_client_section');
     }
 
@@ -54,7 +55,12 @@ class AuthClientHelper {
 
         echo "<input id='domain_name' name='auth-setting-group[domain_name]' readonly='readonly'  size='35' type='text' value='{$site_url}' />";
     }
-
+    public function auth_server_domain_name_callback() {
+        
+        $options = get_option('auth-setting-group');
+        echo "<input id='auth_server_domain_address' name='auth-setting-group[auth_server_domain_address]' size='35' type='text' value='{$options['auth_server_domain_address']}' />";
+        echo "<p class ='description'>for ex :http://www.fusedpress.com</p>";
+    }
     public function auth_key_callback() {
 
         $options = get_option('auth-setting-group');
@@ -94,11 +100,14 @@ class AuthClientHelper {
         $get_option_value = get_option('auth-setting-group');
         //here we get toekn id saved from client server admin
         $auth_key_id = trim($get_option_value['auth_key_id']);
+        
+        //getting auth server domain address
+        $auth_server_domain_address = trim($get_option_value['auth_server_domain_address']);
 
         //here we get domain name 
         $domain_name = trim($get_option_value['domain_name']);
 
-        $url = "http://localhost/latestwp/?auth=true";
+        $url = "$auth_server_domain_address?auth=true";
         $ch = curl_init();
 
         $post_data = array(
@@ -148,9 +157,6 @@ class AuthClientHelper {
                 
                
                 $user = get_user_by('login', $user_login);
-                
-               
-
                 if (!is_wp_error($user)) {
                     
                     //wp_set_auth_cookie( $user_id, $remember, $secure )
